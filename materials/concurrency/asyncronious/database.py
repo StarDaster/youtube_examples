@@ -8,7 +8,7 @@ from uuid import uuid4
 
 password = os.getenv('PASSWORD', None)
 QUERY = """
-        INSERT INTO users (username, rating)
+        INSERT INTO users.db (username, rating)
         VALUES($1, $2);
         """
 
