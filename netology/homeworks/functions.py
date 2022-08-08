@@ -35,21 +35,21 @@ directories = {
 
 
 def get_user_by_document_number(document_number: str):
-    """Задание 1"""
+    """Получить пользователя по номеру документа"""
     for document in documents:
         if document["number"] == document_number:
             return document["name"]
 
 
 def get_shelf_by_document_number(document_number: str):
-    """Задание 2"""
+    """Пункт 2 - получить полку по номеру документа"""
     for shelf in directories.items():
         if document_number in shelf[1]:
             return shelf[0]
 
 
 def get_full_info():
-    """Задание 3"""
+    """Пункт 3 - получение полной информации"""
     for document in documents:
         shelf = get_shelf_by_document_number(document["number"])
         print(f"№: {document['number']}, "
@@ -57,11 +57,13 @@ def get_full_info():
               f"владелец: {document['name']}, "
               f"полка хранения: {shelf}")
 
+
 def get_shelfs_info():
     return ", ".join(directories.keys())
 
+
 def add_new_shelf(shelf_number: str):
-    """Задание 4"""
+    """Пункт 4 - добавление полки"""
     if shelf_number in directories:
         print(f"Такая полка уже существует! Текущий перечень полок: {get_shelfs_info()}.")
         return
@@ -70,6 +72,7 @@ def add_new_shelf(shelf_number: str):
 
 
 def delete_shelf(shelf_number: str):
+    """Пункт 5 - удаление полки"""
     data_from_shelf = directories.get(shelf_number)
     if data_from_shelf == []:
         del directories[shelf_number]
@@ -79,6 +82,62 @@ def delete_shelf(shelf_number: str):
     else:
         print(f"На полке есть документа, удалите их перед удалением полки. "
               f"Текущий перечень полок: {get_shelfs_info()}.")
+
+
+"""Дополнительная часть"""
+
+
+def add_new_document_to_shelf():
+    """Пользователь по команде “ad” может добавить новый документ в данные"""
+    document_number = input("Введите номер документа: ")
+    document_type = input("Введите тип документа: ")
+    user = input("Введите владельца документа: ")
+    shelf_number = input("Введите полку для хранения: ")
+    if shelf_number not in directories:
+        print(f"Такой полки не существует. Добавьте полку командой as.")
+        return
+    document_data = {
+        'type': document_type,
+        'number': document_number,
+        'name': user
+    }
+    documents.append(document_data)
+    directories[shelf_number].append(document_number)
+    print("Документ добавлен. Текущий список документов:")
+    get_full_info()
+
+
+def delete_document(document_number: str):
+    shelf_number = get_shelf_by_document_number(document_number)
+    if shelf_number is None:
+        print("Документ не найден в базе.")
+        get_full_info()
+        return
+    directories[shelf_number].remove(document_number)
+    for document in documents:
+        if document["number"] == document_number:
+            documents.remove(document)
+    print("Документ удален.")
+    get_full_info()
+
+
+def move_document():
+    current_document_number = input("Введите номер документа: ")
+    shelf_number = input("Введите номер полки: ")
+    current_shelf_number = get_shelf_by_document_number(current_document_number)
+    if shelf_number is None:
+        print("Документ не найден в базе.")
+        get_full_info()
+        return
+    if directories.get(shelf_number) is None:
+        print(f"Такой полки не существует. Текущий перечень полок: {get_shelfs_info()}.")
+        return
+    for document_number in directories[current_shelf_number]:
+        if document_number == current_document_number:
+            directories[current_shelf_number].remove(document_number)
+            directories[shelf_number].append(document_number)
+    print("Документ перемещен. ")
+    get_full_info()
 
 
 command = input("Введите команду: ")
@@ -101,3 +160,10 @@ elif command == "l":
 elif command == "ads":
     shelf_number = input("Введите номер полки: ")
     add_new_shelf(shelf_number)
+elif command == "ad":
+    add_new_document_to_shelf()
+elif command == "d":
+    document_number = input("Введите номер документа: ")
+    delete_document(document_number)
+elif command == "m":
+    move_document()
