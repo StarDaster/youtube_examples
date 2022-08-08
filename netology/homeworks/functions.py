@@ -74,6 +74,8 @@ def delete_shelf(shelf_number: str):
     if data_from_shelf == []:
         del directories[shelf_number]
         print(f"Полка удалена. Текущий перечень полок: {get_shelfs_info()}.")
+    elif data_from_shelf is None:
+        print(f"Такой полки не существует. Текущий перечень полок: {get_shelfs_info()}.")
     else:
         print(f"На полке есть документа, удалите их перед удалением полки. "
               f"Текущий перечень полок: {get_shelfs_info()}.")
