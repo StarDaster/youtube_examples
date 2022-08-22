@@ -1,3 +1,5 @@
+DELETE products
+
 POST products/_doc
 {
   "tags": "simple tag"
@@ -6,7 +8,7 @@ POST products/_doc
 # строки будут конкатенированы (с пробельными разделителями) перед тем, как попасть в анализатор
 POST products/_doc
 {
-  "tags": ["simple_tag_1", "simple_tag_2"]
+  "tags": ["simple tag_1", "simple tag_2"]
 }
 
 GET products/_search
@@ -19,15 +21,23 @@ DELETE products
 # обратим внимание на start offset и end offset
 POST /_analyze
 {
-  "text": ["simple_tag_1", "simple_tag_2"],
+  "text": ["simple tag_1", "simple tag_2"],
   "analyzer": "standard"
 }
+
+DELETE users
 
 # не сработает
 POST users/_doc
 {
-  "user_info": [{"name": "Nikolai", "age": 31}, {"name": "Maria", "age": "29"}]
+  "user_info": [
+    {"name": "Nikolai", "age": "31"},
+    {"name": "Maria", "age": 29}
+    ]
 }
+
+GET users/_mapping
+GET users/_search
 
 
 POST numbers/_doc
@@ -35,19 +45,16 @@ POST numbers/_doc
   "sample_numbers": [1, 2, 4, "5", 6, 7]
 }
 
+DELETE numbers
+
 GET numbers/_search
 GET numbers/_mapping
 
 
-# но это все справедливо для полей типа text
-
 # ограничения:
-# 1. массивы должны содержать данные неприводимого к единому типу типов
+# 1. массивы должны содержать данные приводимые к единому типу
 # 2. приведение типов сработает только для проиндексированных полей - если вставка
 # делается первый раз, то тогда надо, чтобы все элементы были одного типа
-
-# сложнные структуры не приводятся к типам
-
 
 # ВЛОЖЕННЫЕ ДОКУМЕНТЫ
 DELETE users
