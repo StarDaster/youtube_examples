@@ -77,12 +77,3 @@ class Reviewer(Mentor):
 
 def avg_for_list_of_students(student_list: list[Student]):
     return sum([student.avg_homeworks for student in student_list]) / len(student_list)
-
-
-best_student = Student('Ruoy', 'Eman', 'your_gender')
-best_student.courses_in_progress += ['Python']
-
-cool_mentor = Mentor('Some', 'Buddy')
-cool_mentor.courses_attached += ['Python']
-
-print(best_student.grades)
