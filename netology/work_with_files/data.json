@@ -1,0 +1,19 @@
+{
+  "items": [
+    {
+      "name": "товар 1",
+      "cost": 10,
+      "code": "item_1"
+    },
+    {
+      "name": "товар 2",
+      "cost": 20,
+      "code": "item_2"
+    },
+    {
+      "name": "товар 3",
+      "cost": 30,
+      "code": "item_3"
+    }
+  ]
+}
