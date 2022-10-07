@@ -1,0 +1,345 @@
+PUT users
+{
+    "mappings" : {
+      "properties" : {
+        "name" : {
+          "type" : "keyword"
+        },
+        "surname" : {
+          "type" : "keyword"
+        },
+        "hard_skills": {
+          "type": "text"
+        }
+      }
+    }
+  }
+
+  DELETE users
+
+  GET users/_search
+
+  POST users/_doc
+  {
+    "name": "Nikolai",
+    "surname": "Sviridov",
+    "hard_skills": ["python", "git", "docker"]
+  }
+
+    POST users/_doc
+  {
+    "name": "Maria",
+    "surname": "Sviridova",
+    "hard_skills": ["c++", "git", "docker"]
+  }
+
+    POST users/_doc
+  {
+    "name": "Ivan",
+    "surname": "Ivanov",
+    "hard_skills": ["java", "javascript", "docker"]
+  }
+
+    POST users/_doc
+  {
+    "name": "Petr",
+    "surname": "Petrov",
+    "hard_skills": ["java", "javascript", "docker", "c++"]
+  }
+
+GET users/_search
+{
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "term": {
+            "hard_skills": {
+              "value": "javascript",
+              "boost": 200
+            }
+          }
+        },
+        {
+          "term": {
+            "hard_skills": {
+              "value": "git"
+            }
+          }
+        },
+        {
+        "term": {
+            "hard_skills": {
+              "value": "python"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+
+GET users/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "term": {
+            "hard_skills": {
+              "value": "c++"
+            }
+          }
+        },
+        {
+          "term": {
+            "hard_skills": {
+              "value": "javascript"
+            }
+          }
+        },
+        {
+          "term": {
+            "hard_skills": {
+              "value": "git"
+            }
+          }
+        },
+        {
+        "term": {
+            "hard_skills": {
+              "value": "python"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+
+# разбор статьи
+PUT candidates
+{
+  "mappings": {
+    "properties": {
+      "fullname": {"type": "text"},
+      "employment_type": {"type": "integer"},
+      "work_type": {"type": "integer"}
+    }
+  }
+}
+
+# permanent fulltime
+POST candidates/_doc
+{
+  "fullname": "Ivan Ivanov",
+  "employment_type": 1,
+  "work_type": 1
+}
+
+# temporary fulltime
+POST candidates/_doc
+{
+  "fullname": "Petr Petrov",
+  "employment_type": 2,
+  "work_type": 1
+}
+
+# permanent parttime
+POST candidates/_doc
+{
+  "fullname": "Sergey Sergeev",
+  "employment_type": [1, 2],
+  "work_type": 2
+}
+
+GET candidates/_search
+
+
+# строгий запрос
+GET candidates/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+          {
+            "terms": {
+              "work_type": [1, 2]
+            }
+          },
+          {
+            "terms": {
+              "employment_type": [1]
+            }
+          }
+        ]
+    }
+  }
+}
+
+# странный запрос
+GET candidates/_search
+{
+  "query": {
+    "bool": {
+      "should": [
+          {
+            "terms": {
+              "work_type": [1],
+              "boost": 1
+            }
+          },
+          {
+            "terms": {
+              "employment_type": [1],
+              "boost": 1000
+            }
+          }
+        ]
+    }
+  }
+}
+
+# результат
+# Ivan - 2
+# Petr - 1
+# Sergey - 1
+
+DELETE candidates
+
+
+GET vacancies/_search
+GET vacancies
+
+GET vacancies/_search
+{
+    "query": {
+    "bool": {
+      "must": [
+        {
+            "range": {
+              "doc.years_of_experience": {
+                "gte": 3
+              }
+            }
+        }
+      ],
+      "should": [
+          {
+            "terms": {
+              "doc.position": ["developer"],
+              "boost": 1
+            }
+          }
+        ]
+    }
+  }
+}
+
+
+GET vacancies/_search
+{
+    "query": {
+    "bool": {
+      "should": [
+          {
+            "terms": {
+              "doc.position": ["developer"],
+              "boost": 1
+            }
+          },
+          {
+            "terms": {
+              "doc.remote_apply": ["no"],
+              "boost": 100
+            }
+          },
+          {
+            "range": {
+              "doc.years_of_experience": {
+                "gte": 3,
+                "boost": 1
+              }
+            }
+          },
+          {
+            "match": {
+              "doc.vacancy_id": 1
+            }
+          }
+        ]
+    }
+  }
+}
+
+
+GET candidates/_search
+{
+  "query": {
+    "exists": {
+      "field": "technologies.javascript"
+    }
+  }
+}
+
+GET candidates/_search
+GET candidates/_mapping
+
+POST candidates/_doc
+{
+  "name": "Nikolai",
+	"technologies": [
+	  {
+	    "name": "python"
+	  }
+	]
+}
+
+GET candidates/_search
+
+# строгий фильтр
+GET candidates/_search
+{
+  "query": {
+    "bool": {
+      "filter": [
+        {"match": {"technologies.name": "python"}},
+        {"match": {"technologies.frameworks": "fastapi"}},
+        {"match": {"technologies.frameworks": "django"}}
+      ]
+    }
+  }
+}
+
+# should фильтр
+GET candidates/_search
+{
+  "query": {
+    "bool": {
+      "should": [
+        {"match": {"technologies.name": "python"}},
+        {"match": {"technologies.frameworks": "fastapi"}},
+        {"match": {"technologies.frameworks": "django"}}
+      ]
+    }
+  }
+}
+
+
+DELETE candidates
+
+PUT candidates
+{
+    "mappings" : {
+      "properties" : {
+        "name" : {
+          "type" : "keyword"
+        },
+        "technologies": {
+          "type": "object"
+        }
+      }
+    }
+  }

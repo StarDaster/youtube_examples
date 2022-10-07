@@ -1,37 +1,40 @@
-# ВЛОЖЕННЫЕ ДОКУМЕНТЫ
+# ВЛОЖЕННЫЕ ДОКУМЕНТЫ И РАБОТА С ТИПОМ DATE
 DELETE users
 
 PUT users
-POST users/_mapping
 {
-  "properties": {
-    "name": {
-      "type": "text"
-    },
-    "surname": {
-      "type": "text"
-    },
-    "age": {
-      "type": "integer"
-    },
-    "job_description": {
+  "mappings":
+    {
       "properties": {
-        "company_name": {
+        "name": {
           "type": "text"
         },
-        "posistion": {
+        "surname": {
           "type": "text"
         },
-        "work_since": {
-          "type": "date"
+        "age": {
+          "type": "integer"
+        },
+        "job_description": {
+          "properties": {
+            "company_name": {
+              "type": "text"
+            },
+            "posistion": {
+              "type": "text"
+            },
+            "work_since": {
+              "type": "date"
+            }
+          }
         }
       }
     }
-  }
 }
 
 GET users/_mapping
 
+# упадёт ошибка
 POST users/_doc
 {
   "name": "Nikolai",
@@ -44,6 +47,7 @@ POST users/_doc
   }
 }
 
+# не упадёт ошибка
 POST users/_doc
 {
   "name": "Nikolai",
@@ -56,6 +60,7 @@ POST users/_doc
   }
 }
 
+# не упадёт ошибка
 POST users/_doc
 {
   "name": "Ivan",
@@ -73,6 +78,7 @@ POST users/_doc
 
 GET users/_search
 
+# не упадёт ошибка
 POST users/_doc
 {
   "name": "Petr",
@@ -86,6 +92,7 @@ POST users/_doc
 }
 
 # маппинг с форматированием даты
+PUT users
 POST users/_mapping
 {
   "properties": {
@@ -110,6 +117,31 @@ POST users/_mapping
           "type": "date",
           "format": "dd/mm/YYYY"
         }
+      }
+    }
+  }
+}
+
+
+# поисковый запрос: вывести сотрудников, которые работают с 1 января 2022 года или позже:
+GET users/_search
+{
+  "query": {
+    "range": {
+      "job_description.work_since": {
+        "gte": "2022-01-01"
+      }
+    }
+  }
+}
+
+# поисковый запрос: вывести сотрудников, которые работают с 1 января 2022 года:
+GET users/_search
+{
+  "query": {
+    "term": {
+      "job_description.work_since": {
+        "value": 1234567890
       }
     }
   }
